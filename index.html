@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PO Time Balance Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Account management</p>
+          <h1>PO Time Balance</h1>
+        </div>
+        <div class="header-actions">
+          <button class="secondary" type="button" data-command="import">Import</button>
+          <button class="secondary" type="button" data-command="export">Export</button>
+          <button class="secondary" type="button" data-command="print">Print</button>
+          <button class="danger ghost" type="button" data-command="reset">Reset demo</button>
+          <input id="import-file" type="file" accept="application/json" hidden>
+        </div>
+      </header>
+
+      <main>
+        <details class="panel expander section-block settings-panel" data-section-key="global-settings" open>
+          <summary class="panel-header expander-summary">
+            <div class="summary-text">
+              <h2>Global Settings</h2>
+              <p>Year, invoice period, capacity defaults, and tolerance</p>
+            </div>
+          </summary>
+          <section class="settings-strip" aria-label="Global settings">
+            <label>
+              <span>Year</span>
+              <input type="number" min="2020" max="2100" data-setting="year">
+            </label>
+            <label>
+              <span>Invoice through</span>
+              <select data-setting="throughMonth"></select>
+            </label>
+            <label>
+              <span>Daily hours [h]</span>
+              <input type="number" min="1" max="24" step="0.25" data-setting="dailyHours">
+            </label>
+            <label>
+              <span>Tolerance [%]</span>
+              <input type="number" min="0" max="50" step="0.5" data-setting="tolerancePct">
+            </label>
+            <label class="wide">
+              <span>Capacity basis</span>
+              <select data-setting="capacityBasis">
+                <option value="net">Annual hours [h] already net</option>
+                <option value="subtractAbsence">Subtract prorated absence</option>
+              </select>
+            </label>
+            <label>
+              <span>Default annual [h]</span>
+              <input type="number" min="0" step="1" data-setting="defaultAnnualHours">
+            </label>
+            <label>
+              <span>Default PTO [d]</span>
+              <input type="number" min="0" step="0.5" data-setting="defaultPtoDays">
+            </label>
+            <label>
+              <span>Default sick days [d]</span>
+              <input type="number" min="0" step="0.5" data-setting="defaultSickDays">
+            </label>
+            <label>
+              <span>Default holidays [d]</span>
+              <input type="number" min="0" step="0.5" data-setting="defaultHolidayDays">
+            </label>
+          </section>
+        </details>
+
+        <details class="panel expander section-block overview-panel" data-section-key="overview" open>
+          <summary class="panel-header expander-summary">
+            <div class="summary-text">
+              <h2>Overview</h2>
+              <p>Budget, invoiced hours, forecast, and capacity</p>
+            </div>
+          </summary>
+          <section id="overview" class="kpi-grid" aria-label="Overview"></section>
+        </details>
+
+        <section class="workspace-grid">
+          <details class="panel expander" data-section-key="po-status" open>
+            <summary class="panel-header expander-summary">
+              <div class="summary-text">
+                <h2>PO Status</h2>
+                <p id="status-period"></p>
+              </div>
+              <button type="button" data-command="add-po">Add PO</button>
+            </summary>
+            <div class="table-wrap">
+              <table id="po-table"></table>
+            </div>
+          </details>
+
+          <details class="panel expander" data-section-key="risk-signals" open>
+            <summary class="panel-header expander-summary">
+              <div class="summary-text">
+                <h2>Risk Signals</h2>
+                <p>Forecast, budget, and staffing gaps</p>
+              </div>
+            </summary>
+            <div id="risk-list" class="risk-list"></div>
+          </details>
+        </section>
+
+        <details class="panel expander section-block" data-section-key="monthly-invoices" open>
+          <summary class="panel-header expander-summary">
+            <div class="summary-text">
+              <h2>Monthly Invoice Hours [h]</h2>
+              <p>Check only months already invoiced</p>
+            </div>
+          </summary>
+          <div class="table-wrap">
+            <table id="monthly-table" class="monthly-table"></table>
+          </div>
+        </details>
+
+        <details class="panel expander section-block" data-section-key="po-graphs" open>
+          <summary class="panel-header expander-summary">
+            <div class="summary-text">
+              <h2>PO Graphs [h]</h2>
+              <p>Monthly hours by selected PO</p>
+            </div>
+          </summary>
+          <div id="po-chart" class="po-chart"></div>
+        </details>
+
+        <section class="workspace-grid lower">
+          <details class="panel expander" data-section-key="people-capacity" open>
+            <summary class="panel-header expander-summary">
+              <div class="summary-text">
+                <h2>People Capacity [h]</h2>
+                <p>Annual availability [h] and engagement allocation</p>
+              </div>
+              <button type="button" data-command="add-person">Add person</button>
+            </summary>
+            <div id="people-table" class="people-tree"></div>
+          </details>
+
+          <details class="panel expander" data-section-key="team-view" open>
+            <summary class="panel-header expander-summary">
+              <div class="summary-text">
+                <h2>Team View</h2>
+                <p>Capacity [h] grouped by team</p>
+              </div>
+            </summary>
+            <div id="team-view" class="stack"></div>
+          </details>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
