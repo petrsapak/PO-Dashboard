@@ -27,7 +27,8 @@ const percentNumber = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 1
 });
 
-const poPalette = ["#136f63", "#335f9f", "#8f5a17", "#8c3f73", "#51743a", "#764c9b"];
+const poPalette = ["#4EC9B0", "#569CD6", "#DCDCAA", "#C586C0", "#B5CEA8", "#CE9178"];
+const legacyPoPalette = ["#136f63", "#335f9f", "#8f5a17", "#8c3f73", "#51743a", "#764c9b"];
 
 let state = loadState();
 
@@ -198,11 +199,17 @@ function normalizeState(input) {
 function normalizePo(po, index) {
   const startMonth = clamp(numberOr(po.startMonth, 0), 0, 11);
   const endMonth = clamp(numberOr(po.endMonth, 11), 0, 11);
+  const legacyColorIndex = legacyPoPalette.findIndex(
+    (color) => color.toLowerCase() === String(po.color || "").toLowerCase()
+  );
   return {
     id: po.id || createId("po"),
     name: po.name || `PO-${index + 1}`,
     annualHours: Math.max(0, numberOr(po.annualHours, 0)),
-    color: po.color || poPalette[index % poPalette.length],
+    color:
+      legacyColorIndex >= 0
+        ? poPalette[legacyColorIndex % poPalette.length]
+        : po.color || poPalette[index % poPalette.length],
     startMonth: Math.min(startMonth, endMonth),
     endMonth: Math.max(startMonth, endMonth)
   };
