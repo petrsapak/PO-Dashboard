@@ -44,6 +44,7 @@ function defaultState() {
 
   return normalizeState({
     settings: {
+      reportName: "",
       year: new Date().getFullYear(),
       throughMonth: Math.min(new Date().getMonth(), 11),
       dailyHours: 8,
@@ -134,6 +135,10 @@ function loadState() {
 function normalizeState(input) {
   const safe = input && typeof input === "object" ? input : {};
   const settings = {
+    reportName:
+      safe.settings && typeof safe.settings.reportName === "string"
+        ? safe.settings.reportName
+        : "",
     year: numberOr(safe.settings && safe.settings.year, new Date().getFullYear()),
     throughMonth: clamp(numberOr(safe.settings && safe.settings.throughMonth, new Date().getMonth()), 0, 11),
     dailyHours: Math.max(1, numberOr(safe.settings && safe.settings.dailyHours, 8)),
@@ -297,6 +302,35 @@ function percentOfBudget(value, budget) {
 function signedHoursWithPercent(value, budget) {
   const percent = percentOfBudget(value, budget);
   return percent ? `${signedHours(value)} (${percent})` : signedHours(value);
+}
+
+function exportFileName(reportName = state.settings.reportName) {
+  const safeName = fileNameSlug(reportName) || "po-time-balance";
+  return `${safeName}-${dateTimeStamp()}.json`;
+}
+
+function currentReportName() {
+  const reportInput = document.querySelector('[data-setting="reportName"]');
+  return reportInput ? reportInput.value : state.settings.reportName;
+}
+
+function fileNameSlug(value) {
+  return String(value)
+    .trim()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+}
+
+function dateTimeStamp(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate())
+  ].join("-") + `_${pad(date.getHours())}-${pad(date.getMinutes())}-${pad(date.getSeconds())}`;
 }
 
 function poHours(poId, start = 0, end = 11, includeMonth = () => true) {
@@ -491,6 +525,7 @@ function render() {
 }
 
 function renderSettings() {
+  document.querySelector('[data-setting="reportName"]').value = state.settings.reportName;
   document.querySelector('[data-setting="year"]').value = state.settings.year;
   document.querySelector('[data-setting="dailyHours"]').value = state.settings.dailyHours;
   document.querySelector('[data-setting="tolerancePct"]').value = state.settings.tolerancePct;
@@ -508,6 +543,9 @@ function renderSettings() {
 
   document.getElementById("status-period").textContent =
     invoicedPeriodLabel();
+  document.title = state.settings.reportName
+    ? `${state.settings.reportName} - PO Time Balance Dashboard`
+    : "PO Time Balance Dashboard";
 }
 
 function renderOverview() {
@@ -1318,7 +1356,7 @@ function handleSettingChange(event) {
     return;
   }
 
-  if (field === "capacityBasis") {
+  if (field === "capacityBasis" || field === "reportName") {
     state.settings[field] = event.target.value;
   } else {
     state.settings[field] = numberOr(event.target.value, state.settings[field]);
@@ -1601,13 +1639,45 @@ function deleteEngagement(personId, engagementId) {
   render();
 }
 
-function exportData() {
+async function exportData() {
+  state.settings.reportName = currentReportName();
+  saveState();
+
   const data = JSON.stringify(state, null, 2);
+  const fileName = exportFileName();
   const blob = new Blob([data], { type: "application/json" });
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [
+          {
+            description: "JSON files",
+            accept: { "application/json": [".json"] }
+          }
+        ]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return;
+    } catch (error) {
+      if (error && error.name === "AbortError") {
+        return;
+      }
+      console.error("Save dialog export failed", error);
+      alert("The file save dialog failed. Using the browser download instead.");
+    }
+  }
+
+  downloadBlob(blob, fileName);
+}
+
+function downloadBlob(blob, fileName) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `po-time-balance-${state.settings.year}.json`;
+  link.download = fileName;
   document.body.appendChild(link);
   link.click();
   link.remove();

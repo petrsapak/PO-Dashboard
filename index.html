@@ -9,9 +9,15 @@
   <body>
     <div class="app-shell">
       <header class="app-header">
-        <div>
+        <div class="header-title">
           <p class="eyebrow">Account management</p>
-          <h1>PO Time Balance</h1>
+          <div class="title-row">
+            <h1>PO Time Balance</h1>
+            <label class="report-name-field">
+              <span>Report name</span>
+              <input type="text" data-setting="reportName" aria-label="Report name" placeholder="Report name">
+            </label>
+          </div>
         </div>
         <div class="header-actions">
           <button class="secondary" type="button" data-command="import">Import</button>

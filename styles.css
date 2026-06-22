@@ -159,6 +159,29 @@ button:focus-visible {
   margin-bottom: 18px;
 }
 
+.header-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.title-row {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.report-name-field {
+  width: min(380px, 42vw);
+  min-width: 240px;
+}
+
+.report-name-field input {
+  min-height: 36px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
 .eyebrow {
   margin: 0 0 4px;
   color: var(--blue);
@@ -1049,6 +1072,10 @@ td.actions {
     justify-content: flex-start;
   }
 
+  .report-name-field {
+    width: min(420px, 100%);
+  }
+
   .settings-strip,
   .kpi-grid {
     grid-template-columns: 1fr 1fr;
@@ -1087,6 +1114,11 @@ td.actions {
   .header-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .header-title,
+  .report-name-field {
     width: 100%;
   }
 
@@ -1179,10 +1211,40 @@ td.actions {
   }
 
   button,
-  .app-header,
+  .header-actions,
   .chart-controls,
   td.actions {
     display: none !important;
+  }
+
+  .app-header {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10mm;
+    margin: 0 0 5mm;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .title-row {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 5mm;
+  }
+
+  h1 {
+    font-size: 18pt;
+  }
+
+  .report-name-field {
+    width: 70mm;
+    min-width: 70mm;
+  }
+
+  .report-name-field input {
+    color: var(--strong-ink);
+    font-size: 14pt;
+    font-weight: 850;
   }
 
   .app-shell {
