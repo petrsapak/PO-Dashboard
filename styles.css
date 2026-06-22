@@ -750,6 +750,10 @@ td.actions {
   grid-column: 2;
 }
 
+.print-graph-pages {
+  display: none;
+}
+
 .stack {
   display: grid;
   gap: 10px;
@@ -1137,26 +1141,334 @@ td.actions {
 }
 
 @media print {
+  @page {
+    size: landscape;
+    margin: 10mm;
+  }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-strong: #f6f8fa;
+    --surface-raised: #ffffff;
+    --input-bg: #ffffff;
+    --ink: #1f2328;
+    --strong-ink: #111827;
+    --muted: #57606a;
+    --muted-strong: #374151;
+    --line: #d0d7de;
+    --line-strong: #afb8c1;
+    --accent-soft: #dbeafe;
+    --green-soft: #dcfce7;
+    --amber-soft: #fef3c7;
+    --red-soft: #fee2e2;
+    --blue-soft: #dbeafe;
+  }
+
+  * {
+    box-shadow: none !important;
+  }
+
+  html,
   body {
-    background: #fff;
+    background: #ffffff;
+    color: var(--ink);
+    font-size: 9pt;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 
   button,
-  .header-actions,
-  .settings-strip input,
-  .settings-strip select,
+  .app-header,
+  .chart-controls,
   td.actions {
-    display: none;
+    display: none !important;
   }
 
   .app-shell {
     width: 100%;
+    margin: 0;
     padding: 0;
   }
 
-  .kpi-card,
+  main,
+  .workspace-grid,
+  .workspace-grid.lower {
+    display: block;
+    margin: 0;
+  }
+
+  .section-block,
+  .workspace-grid > .expander {
+    margin: 0;
+  }
+
+  .expander[data-section-key] {
+    display: block;
+    width: 100%;
+    overflow: visible;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .expander[data-section-key="team-view"] {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .expander[data-section-key="po-graphs"] {
+    display: none;
+  }
+
+  .print-graph-pages {
+    display: block;
+  }
+
+  .print-graph-page {
+    display: block;
+    width: 100%;
+    margin: 0;
+    overflow: visible;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
   .panel,
+  .kpi-card,
+  .settings-strip,
+  .risk-item,
+  .person-node,
+  .person-main,
+  .person-children,
+  .engagement-row,
+  .mini-row,
+  .chart-frame,
+  .chart-legend-item,
+  .print-graph-meta > div {
+    border-color: var(--line);
+    background: var(--surface);
+  }
+
+  .panel,
+  .kpi-card,
   .settings-strip {
-    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .panel-header,
+  .panel-header.expander-summary {
+    padding: 8px 10px;
+    background: var(--surface-strong);
+    cursor: default;
+  }
+
+  .panel-header.expander-summary {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .expander-summary::before,
+  .person-summary::before {
+    display: none;
+  }
+
+  h2 {
+    font-size: 13pt;
+  }
+
+  .panel-header p,
+  label span,
+  .kpi-label,
+  th,
+  .th-sub,
+  .risk-copy,
+  .chart-caption,
+  .mini-copy {
+    color: var(--muted);
+  }
+
+  input,
+  select {
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    appearance: auto;
+    -webkit-appearance: auto;
+  }
+
+  .settings-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .overview-panel .kpi-grid,
+  .risk-list,
+  .po-chart,
+  .stack,
+  .people-tree,
+  .print-graph-meta {
+    padding: 10px;
+  }
+
+  .print-graph-meta {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .print-graph-meta > div {
+    padding: 8px;
+    border: 1px solid var(--line);
+  }
+
+  .print-graph-meta span {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 8pt;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .print-graph-meta strong {
+    display: block;
+    color: var(--ink);
+    font-size: 11pt;
+    font-weight: 850;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .kpi-card {
+    min-height: 0;
+    padding: 10px;
+  }
+
+  .kpi-value {
+    font-size: 18pt;
+  }
+
+  .table-wrap,
+  .chart-frame {
+    overflow: visible;
+  }
+
+  table,
+  .monthly-table {
+    min-width: 0;
+    font-size: 8pt;
+  }
+
+  th,
+  td {
+    padding: 4px 5px;
+  }
+
+  #po-table th:last-child {
+    display: none;
+  }
+
+  .editable,
+  .monthly-table input,
+  .month-select,
+  .name-input,
+  .team-input {
+    min-width: 0;
+  }
+
+  .monthly-table input {
+    width: 48px;
+  }
+
+  .bar-track {
+    width: 70px;
+  }
+
+  .status-pill {
+    min-height: 0;
+    padding: 2px 6px;
+  }
+
+  .status-balanced {
+    color: #116329;
+  }
+
+  .status-under {
+    color: #7c4a03;
+  }
+
+  .status-over {
+    color: #b42318;
+  }
+
+  .status-info {
+    color: #0969da;
+  }
+
+  .not-invoiced-row td:not(.inactive-month),
+  .inactive-month {
+    background: var(--surface-strong);
+  }
+
+  .po-chart-svg {
+    min-width: 0;
+  }
+
+  .print-chart-frame {
+    margin: 0 10px 8px;
+  }
+
+  .print-chart-caption {
+    padding: 0 10px 10px;
+  }
+
+  .chart-shade {
+    fill: #eef2f7;
+  }
+
+  .chart-grid-line {
+    stroke: #d0d7de;
+  }
+
+  .chart-dot {
+    stroke: #ffffff;
+  }
+
+  .person-summary,
+  .person-main,
+  .person-children,
+  .engagement-row {
+    padding: 8px;
+  }
+
+  .person-main {
+    grid-template-columns: minmax(120px, 1.4fr) repeat(8, minmax(54px, 0.6fr));
+    gap: 7px;
+  }
+
+  .engagement-row {
+    grid-template-columns: minmax(80px, 1fr) repeat(4, minmax(56px, 0.6fr)) minmax(56px, 0.6fr);
+    gap: 7px;
+  }
+
+  .person-delete,
+  .engagement-delete {
+    display: none !important;
   }
 }

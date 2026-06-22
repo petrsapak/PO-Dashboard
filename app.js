@@ -31,6 +31,8 @@ const poPalette = ["#4EC9B0", "#569CD6", "#DCDCAA", "#C586C0", "#B5CEA8", "#CE91
 const legacyPoPalette = ["#136f63", "#335f9f", "#8f5a17", "#8c3f73", "#51743a", "#764c9b"];
 
 let state = loadState();
+let suppressDetailsPersistence = false;
+let printDetailsSnapshot = null;
 
 function defaultState() {
   const pos = [
@@ -867,6 +869,69 @@ function renderPoChart() {
   `;
 }
 
+function renderPrintPoGraphs() {
+  const existing = document.getElementById("print-graph-pages");
+  if (existing) {
+    existing.remove();
+  }
+
+  const poGraphSection = document.querySelector('[data-section-key="po-graphs"]');
+  if (!poGraphSection || !state.pos.length) {
+    return;
+  }
+
+  const container = document.createElement("section");
+  container.id = "print-graph-pages";
+  container.className = "print-graph-pages";
+  container.setAttribute("aria-label", "Individual PO graph print pages");
+  container.innerHTML = state.pos.map((po) => renderPrintPoGraphPage(po)).join("");
+  poGraphSection.insertAdjacentElement("afterend", container);
+}
+
+function renderPrintPoGraphPage(po) {
+  const activeMonths = monthCount(po.startMonth, po.endMonth);
+  const monthlyPace = activeMonths ? po.annualHours / activeMonths : 0;
+
+  return `
+    <article class="panel print-graph-page">
+      <header class="panel-header print-graph-header">
+        <div class="summary-text">
+          <h2>${escapeHtml(po.name)}</h2>
+          <p>Monthly invoice hours [h], budget pace, and forecast</p>
+        </div>
+      </header>
+      <div class="print-graph-meta">
+        <div>
+          <span>Active period</span>
+          <strong>${monthRangeLabel(po.startMonth, po.endMonth)}</strong>
+        </div>
+        <div>
+          <span>Annual budget</span>
+          <strong>${formatHoursWithUnit(po.annualHours)}</strong>
+        </div>
+        <div>
+          <span>Monthly pace</span>
+          <strong>${formatHoursWithUnit(monthlyPace)}</strong>
+        </div>
+        <div>
+          <span>Invoiced</span>
+          <strong>${formatHoursWithUnit(poInvoicedHours(po))}</strong>
+        </div>
+        <div>
+          <span>Forecast</span>
+          <strong>${formatHoursWithUnit(forecastForPo(po.id))}</strong>
+        </div>
+      </div>
+      <div class="chart-frame print-chart-frame">
+        ${renderPoChartSvg([po])}
+      </div>
+      <div class="chart-caption print-chart-caption">
+        Solid line shows monthly hours [h]. Dashed line shows this PO's monthly budget pace. Uninvoiced months are shaded.
+      </div>
+    </article>
+  `;
+}
+
 function renderPoChartSvg(selectedPos) {
   const width = 960;
   const height = 360;
@@ -1178,6 +1243,10 @@ function applyDetailsState() {
 }
 
 function handleDetailsToggle(event) {
+  if (suppressDetailsPersistence) {
+    return;
+  }
+
   const details = event.target;
   if (!details || details.tagName !== "DETAILS") {
     return;
@@ -1193,6 +1262,50 @@ function handleDetailsToggle(event) {
     setCollapsed(state.ui.collapsedPeople, details.dataset.personId, !details.open);
     saveState();
   }
+}
+
+function preparePrintLayout() {
+  if (printDetailsSnapshot) {
+    return;
+  }
+
+  printDetailsSnapshot = Array.from(document.querySelectorAll("details.expander")).map((details) => ({
+    details,
+    open: details.open
+  }));
+
+  suppressDetailsPersistence = true;
+  printDetailsSnapshot.forEach(({ details }) => {
+    details.open = true;
+  });
+  renderPrintPoGraphs();
+}
+
+function restorePrintLayout() {
+  if (!printDetailsSnapshot) {
+    return;
+  }
+
+  const printGraphs = document.getElementById("print-graph-pages");
+  if (printGraphs) {
+    printGraphs.remove();
+  }
+
+  printDetailsSnapshot.forEach(({ details, open }) => {
+    details.open = open;
+  });
+  printDetailsSnapshot = null;
+
+  window.setTimeout(() => {
+    suppressDetailsPersistence = false;
+  }, 100);
+}
+
+function printDashboard() {
+  preparePrintLayout();
+  requestAnimationFrame(() => {
+    window.print();
+  });
 }
 
 function engagementAbsenceHours(entry, item) {
@@ -1388,7 +1501,7 @@ function handleCommand(event) {
   }
 
   if (command === "print") {
-    window.print();
+    printDashboard();
   }
 
   if (command === "reset") {
@@ -1547,6 +1660,8 @@ document.addEventListener("change", (event) => {
 
 document.addEventListener("click", handleCommand);
 document.addEventListener("toggle", handleDetailsToggle, true);
+window.addEventListener("beforeprint", preparePrintLayout);
+window.addEventListener("afterprint", restorePrintLayout);
 
 document.getElementById("import-file").addEventListener("change", (event) => {
   const file = event.target.files && event.target.files[0];
