@@ -431,6 +431,10 @@ td.actions {
   min-width: 116px;
 }
 
+.date-input {
+  min-width: 142px;
+}
+
 .po-select {
   min-width: 0;
 }
@@ -625,6 +629,56 @@ td.actions {
   align-items: start;
 }
 
+.chart-control-stack {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.chart-type-selector {
+  display: inline-flex;
+  flex-wrap: wrap;
+  width: max-content;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-raised);
+}
+
+.chart-type-option {
+  position: relative;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.chart-type-option input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.chart-type-option span {
+  display: block;
+  min-height: 28px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  color: inherit;
+  line-height: 1.1;
+}
+
+.chart-type-option.selected span {
+  background: var(--accent);
+  color: #ffffff;
+}
+
 .chart-selector {
   display: flex;
   flex-wrap: wrap;
@@ -714,6 +768,31 @@ td.actions {
   opacity: 0.55;
 }
 
+.chart-projection-line {
+  stroke-width: 2.4;
+  stroke-dasharray: 9 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.9;
+}
+
+.chart-reference-line {
+  stroke: #8b949e;
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+  opacity: 0.85;
+}
+
+.chart-cone-band {
+  opacity: 0.14;
+}
+
+.chart-health-bubble {
+  opacity: 0.82;
+  stroke: var(--surface);
+  stroke-width: 2;
+}
+
 .chart-dot {
   stroke: var(--surface);
   stroke-width: 2;
@@ -721,7 +800,9 @@ td.actions {
 
 .chart-axis-title,
 .chart-x-label,
-.chart-y-label {
+.chart-y-label,
+.chart-inline-label,
+.chart-point-label {
   fill: var(--muted);
   font-size: 12px;
   font-weight: 800;
@@ -733,6 +814,14 @@ td.actions {
 
 .chart-y-label {
   text-anchor: end;
+}
+
+.chart-point-label {
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 
 .chart-caption {
@@ -957,7 +1046,7 @@ td.actions {
 .engagement-row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(160px, 1fr) minmax(220px, 1.4fr) repeat(4, minmax(96px, 0.6fr)) 32px;
+  grid-template-columns: minmax(160px, 1fr) minmax(220px, 1.4fr) repeat(2, minmax(132px, 0.72fr)) minmax(76px, 0.42fr) minmax(96px, 0.55fr) 32px;
   gap: 10px;
   align-items: end;
   padding: 12px;
@@ -988,6 +1077,10 @@ td.actions {
 .engagement-field input,
 .engagement-field select {
   min-width: 0;
+}
+
+.engagement-field .date-input {
+  min-width: 128px;
 }
 
 .readonly-field strong {
@@ -1094,7 +1187,7 @@ td.actions {
   }
 
   .engagement-row {
-    grid-template-columns: minmax(150px, 1fr) minmax(190px, 1.35fr) repeat(2, minmax(96px, 0.7fr)) minmax(76px, 0.45fr) minmax(84px, 0.5fr) 32px;
+    grid-template-columns: minmax(150px, 1fr) minmax(190px, 1.35fr) repeat(2, minmax(128px, 0.7fr)) minmax(76px, 0.45fr) minmax(84px, 0.5fr) 32px;
   }
 }
 
@@ -1447,6 +1540,7 @@ td.actions {
   }
 
   .editable,
+  .date-input,
   .monthly-table input,
   .month-select,
   .name-input,
