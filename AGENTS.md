@@ -61,6 +61,7 @@ Be especially careful when editing:
 Run these after JavaScript changes:
 
 ```powershell
+node --test tests/logic.test.js
 node --check state.js
 node --check calculations.js
 node --check charts.js
@@ -80,7 +81,7 @@ For HTML/CSS-only changes, inspect `index.html` directly in a browser when possi
 - Print preview or print stylesheet behavior when relevant.
 - Import/export if persistence or normalization changed.
 
-There is currently no automated test suite. If you add one, keep it lightweight and focused on the calculation functions first.
+The automated suite in `tests/logic.test.js` is intentionally lightweight and focused on state normalization plus calculation functions. Extend it first when changing PO date weighting, forecast/status behavior, or capacity math.
 
 ## Git And File Hygiene
 

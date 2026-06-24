@@ -8,6 +8,14 @@ Open `index.html` in a browser.
 
 No build step or server is required.
 
+## Test
+
+Run the logic test suite with Node:
+
+```powershell
+node --test tests/logic.test.js
+```
+
 ## Data
 
 - Dashboard data is saved in browser local storage.
