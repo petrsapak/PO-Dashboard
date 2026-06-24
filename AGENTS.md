@@ -10,7 +10,12 @@ This is a dependency-free static dashboard for tracking purchase order budget ho
 
 - `index.html`: document shell and static section structure.
 - `styles.css`: all screen, responsive, and print styling.
-- `app.js`: application state, normalization, calculations, rendering, charts, import/export, print handling, and event handlers.
+- `state.js`: shared constants, default/demo state, state normalization, date normalization helpers, and persistence.
+- `calculations.js`: hour formatting, PO budget math, forecast/status logic, and capacity calculations.
+- `charts.js`: PO graph controls, chart legends, SVG chart rendering, and print graph page rendering.
+- `io.js`: export/import helpers, print layout flow, reset behavior, and HTML escaping helpers.
+- `render.js`: screen rendering for settings, overview, PO/monthly/people/team sections, and details expansion state.
+- `app.js`: controller/bootstrap code, form event handling, commands, add/delete actions, and initial render.
 - `README.md`: user-facing behavior and data model notes.
 
 ## Core Product Rules
@@ -53,11 +58,18 @@ Be especially careful when editing:
 
 ## Validation
 
-Run this after JavaScript changes:
+Run these after JavaScript changes:
 
 ```powershell
+node --check state.js
+node --check calculations.js
+node --check charts.js
+node --check io.js
+node --check render.js
 node --check app.js
 ```
+
+For load-order syntax validation, concatenate the scripts in the same order used by `index.html`: `state.js`, `calculations.js`, `charts.js`, `io.js`, `render.js`, then `app.js`.
 
 For HTML/CSS-only changes, inspect `index.html` directly in a browser when possible. For UI changes, check at least:
 
@@ -77,4 +89,3 @@ There is currently no automated test suite. If you add one, keep it lightweight 
 - Do not commit unless the user asks.
 - Do not run destructive git commands such as `reset --hard` or checkout-based reverts unless explicitly requested.
 - Use ASCII in new content unless a file already requires otherwise.
-
